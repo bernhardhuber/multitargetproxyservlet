@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <servlet>
+        <servlet-name>proxy-servlet-internal-1</servlet-name>
+        <servlet-class>org.mitre.dsmiley.httpproxy.ProxyServlet</servlet-class>
+        <init-param>
+            <param-name>targetUri</param-name>
+            <param-value>http://localhost:8080/proxyservlet</param-value>
+        </init-param>
+        <init-param>
+            <param-name>log</param-name>
+            <param-value>true</param-value>
+        </init-param>        
+    </servlet>
+    <servlet>
+        <description>use hard-coded target-uris</description>
+        <servlet-name>multi-proxy-servlet-1</servlet-name>
+        <servlet-class>org.huberb.proxyservlet.MultiProxyingServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <description>use servlet-init-parameter target-uris</description>
+        <servlet-name>multi-proxy-servlet-2</servlet-name>
+        <servlet-class>org.huberb.proxyservlet.MultiProxyingServlet</servlet-class>
+        <init-param>
+            <param-name>targetUri.1</param-name>
+            <param-value>/multiproxyingservlet/a.html</param-value>
+        </init-param>
+        <init-param>
+            <param-name>targetUri.2</param-name>
+            <param-value>/multiproxyingservlet/b.html</param-value>
+        </init-param>
+        <init-param>
+            <param-name>targetUri.3</param-name>
+            <param-value>/multiproxyingservlet/c.html</param-value>
+        </init-param>
+    </servlet>
+    <servlet>
+        <description>use servlet-init-parameter target-uris</description>
+        <servlet-name>multi-proxy-servlet-3</servlet-name>
+        <servlet-class>org.huberb.proxyservlet.MultiProxyingServlet</servlet-class>
+        <init-param>
+            <param-name>targetUris</param-name>
+            <param-value>/multiproxyingservlet/a.html,/multiproxyingservlet/b.html, /multiproxyingservlet/c.html</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>proxy-servlet-internal-1</servlet-name>
+        <url-pattern>/proxy-servlet-internal-1/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>multi-proxy-servlet-1</servlet-name>
+        <url-pattern>/multi-proxy-servlet-1/index.html</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>multi-proxy-servlet-2</servlet-name>
+        <url-pattern>/multi-proxy-servlet-2/index.html</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>multi-proxy-servlet-3</servlet-name>
+        <url-pattern>/multi-proxy-servlet-3/index.html</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+</web-app>
