@@ -38,11 +38,9 @@ public class HttpRequestProxyFactory {
     protected boolean doPreserveCookies = false;
     protected boolean doForwardIP = false;
     protected boolean doSendUrlFragment = false;
-    private final Config config;
     private final Env env;
 
     public HttpRequestProxyFactory(Config config, Env env) {
-        this.config = config;
         this.doHandleCompression = config.isDoHandleCompression();
         this.doPreserveHost = config.isDoPreserveHost();
         this.doPreserveCookies = config.isDoPreserveCookies();
@@ -76,7 +74,7 @@ public class HttpRequestProxyFactory {
      * @param servletRequest
      * @return
      */
-    protected String rewriteUrlFromRequest(HttpServletRequest servletRequest) {
+    private String rewriteUrlFromRequest(HttpServletRequest servletRequest) {
         StringBuilder uri = new StringBuilder(500);
         uri.append(env.getTargetUri());
         // Handle the path given to the servlet
@@ -112,7 +110,7 @@ public class HttpRequestProxyFactory {
         return uri.toString();
     }
 
-    protected String rewriteQueryStringFromRequest(HttpServletRequest servletRequest, String queryString) {
+    private String rewriteQueryStringFromRequest(HttpServletRequest servletRequest, String queryString) {
         return queryString;
     }
 
@@ -124,11 +122,11 @@ public class HttpRequestProxyFactory {
      * @param servletRequest
      * @return
      */
-    protected String rewritePathInfoFromRequest(HttpServletRequest servletRequest) {
+    private String rewritePathInfoFromRequest(HttpServletRequest servletRequest) {
         return servletRequest.getPathInfo();
     }
 
-    protected HttpRequest newProxyRequestWithEntity(String method, String proxyRequestUri, HttpServletRequest servletRequest) throws IOException {
+    private HttpRequest newProxyRequestWithEntity(String method, String proxyRequestUri, HttpServletRequest servletRequest) throws IOException {
         HttpEntityEnclosingRequest eProxyRequest = new BasicHttpEntityEnclosingRequest(method, proxyRequestUri);
         // Add the input entity (streamed)
         //  note: we don't bother ensuring we close the servletInputStream since the container handles it
@@ -152,7 +150,7 @@ public class HttpRequestProxyFactory {
      * @param servletRequest
      * @param proxyRequest
      */
-    protected void copyRequestHeaders(HttpServletRequest servletRequest, HttpRequest proxyRequest) {
+    private void copyRequestHeaders(HttpServletRequest servletRequest, HttpRequest proxyRequest) {
         // Get an Enumeration of all of the header names sent by the client
         @SuppressWarnings("unchecked")
         Enumeration<String> enumerationOfHeaderNames = servletRequest.getHeaderNames();
@@ -170,7 +168,7 @@ public class HttpRequestProxyFactory {
      * @param proxyRequest
      * @param headerName
      */
-    protected void copyRequestHeader(HttpServletRequest servletRequest, HttpRequest proxyRequest,
+    private void copyRequestHeader(HttpServletRequest servletRequest, HttpRequest proxyRequest,
             String headerName) {
         //Instead the content-length is effectively set via InputStreamEntity
         if (headerName.equalsIgnoreCase(HttpHeaders.CONTENT_LENGTH)) {
@@ -214,7 +212,7 @@ public class HttpRequestProxyFactory {
      * @param cookieValue
      * @return
      */
-    protected String getRealCookie(String cookieValue) {
+    private String getRealCookie(String cookieValue) {
         StringBuilder escapedCookie = new StringBuilder();
         String[] cookies = cookieValue.split("[;,]");
         for (String cookie : cookies) {

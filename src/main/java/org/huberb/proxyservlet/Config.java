@@ -190,11 +190,9 @@ public class Config {
 
     static class AccessorFactory {
 
-        private final Config config;
         private final List<Accessor<?>> configNameList;
 
         public AccessorFactory(Config config) {
-            this.config = config;
             this.configNameList = Arrays.asList(
                     //---
                     new Accessor<>("doLog", Boolean.class, config::setDoLog),
@@ -237,8 +235,10 @@ public class Config {
                     });
         }
     }
-    //---
 
+    /**
+     * Build {@link Config} instance from a {@link Properties} instance.
+     */
     static class ConfigFromPropertiesBuilder {
 
         Properties props;
@@ -261,6 +261,9 @@ public class Config {
         }
     }
 
+    /**
+     * Build {@link Config} instance from servlet init-parameters.
+     */
     static class ConfigFromServletConfigBuilder {
 
         ServletConfig servletConfig;

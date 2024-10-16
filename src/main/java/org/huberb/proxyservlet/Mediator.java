@@ -42,10 +42,6 @@ public class Mediator {
         this.i = i;
     }
 
-    boolean sendTheHttpResponse(int i) {
-        return i == 0;
-    }
-
     /**
      * Send a proxy request to target, and process the response.
      *
@@ -62,11 +58,11 @@ public class Mediator {
         HttpResponse proxyResponse = null;
         try {
             // 2 Execute the proxy request
-            proxyResponse = new HttpClientExecutor(config,env).doExecute(servletRequest, proxyRequest);
+            proxyResponse = new HttpClientExecutor(config, env).doExecute(servletRequest, proxyRequest);
 
             // 3 Send the response 
             if (sendTheHttpResponse(i)) {
-                new HttpResponseProxyFactory(config,env).sendResponse(servletRequest, servletResponse, proxyResponse);
+                new HttpResponseProxyFactory(config, env).sendResponse(servletRequest, servletResponse, proxyResponse);
             }
         } catch (Exception e) {
             if (sendTheHttpResponse(i)) {
@@ -80,6 +76,10 @@ public class Mediator {
             //Note: Don't need to close servlet outputStream:
             // http://stackoverflow.com/questions/1159168/should-one-call-close-on-httpservletresponse-getoutputstream-getwriter
         }
+    }
+
+    boolean sendTheHttpResponse(int i) {
+        return i == 0;
     }
 
     protected void handleRequestException(HttpRequest proxyRequest, HttpResponse proxyResonse, Exception e) throws ServletException, IOException {
@@ -105,6 +105,6 @@ public class Mediator {
         if (e instanceof IOException) {
             throw (IOException) e;
         }
-        throw new RuntimeException(e);
+        throw new RuntimeException(Mediator.class.getSimpleName(),e);
     }
 }

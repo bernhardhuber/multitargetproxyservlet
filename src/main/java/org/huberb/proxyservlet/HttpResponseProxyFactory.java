@@ -36,11 +36,9 @@ public class HttpResponseProxyFactory {
     protected boolean doPreserveCookies = false;
     protected boolean doHandleCompression = false;
 
-    private final Config config;
     private final Env env;
 
     public HttpResponseProxyFactory(Config config, Env env) {
-        this.config = config;
         this.doPreserveCookies = config.isDoPreserveCookies();
         this.doHandleCompression = config.isDoHandleCompression();
         this.env = env;
@@ -79,7 +77,7 @@ public class HttpResponseProxyFactory {
      * @param servletRequest
      * @param servletResponse
      */
-    protected void copyResponseHeaders(HttpResponse proxyResponse, HttpServletRequest servletRequest,
+    private void copyResponseHeaders(HttpResponse proxyResponse, HttpServletRequest servletRequest,
             HttpServletResponse servletResponse) {
         for (Header header : proxyResponse.getAllHeaders()) {
             copyResponseHeader(servletRequest, servletResponse, header);
@@ -94,7 +92,7 @@ public class HttpResponseProxyFactory {
      * @param servletResponse
      * @param header
      */
-    protected void copyResponseHeader(HttpServletRequest servletRequest,
+    private void copyResponseHeader(HttpServletRequest servletRequest,
             HttpServletResponse servletResponse, Header header) {
         String headerName = header.getName();
         if (HobByHopHeaders.containsHeader(headerName)) {
@@ -121,7 +119,7 @@ public class HttpResponseProxyFactory {
      * @param theUrl
      * @return
      */
-    protected String rewriteUrlFromResponse(HttpServletRequest servletRequest, String theUrl) {
+    private String rewriteUrlFromResponse(HttpServletRequest servletRequest, String theUrl) {
         //TODO document example paths
         final String targetUri = env.getTargetUri();
         if (theUrl.startsWith(targetUri)) {
@@ -163,7 +161,7 @@ public class HttpResponseProxyFactory {
      * @param servletResponse
      * @param headerValue
      */
-    protected void copyProxyCookie(HttpServletRequest servletRequest,
+    private void copyProxyCookie(HttpServletRequest servletRequest,
             HttpServletResponse servletResponse, String headerValue) {
         for (HttpCookie cookie : HttpCookie.parse(headerValue)) {
             Cookie servletCookie = createProxyCookie(servletRequest, cookie);
@@ -178,7 +176,7 @@ public class HttpResponseProxyFactory {
      * @param cookie original cookie
      * @return proxy cookie
      */
-    protected Cookie createProxyCookie(HttpServletRequest servletRequest, HttpCookie cookie) {
+    private Cookie createProxyCookie(HttpServletRequest servletRequest, HttpCookie cookie) {
         String proxyCookieName = getProxyCookieName(cookie);
         Cookie servletCookie = new Cookie(proxyCookieName, cookie.getValue());
         servletCookie.setPath(buildProxyCookiePath(servletRequest)); //set to the path of the proxy servlet
@@ -198,7 +196,7 @@ public class HttpResponseProxyFactory {
      * @param cookie cookie to get proxy cookie name for
      * @return non-conflicting proxy cookie name
      */
-    protected String getProxyCookieName(HttpCookie cookie) {
+    private String getProxyCookieName(HttpCookie cookie) {
         return doPreserveCookies ? cookie.getName() : env.getCookieNamePrefix() + cookie.getName();
     }
 
@@ -208,7 +206,7 @@ public class HttpResponseProxyFactory {
      * @param servletRequest original request
      * @return proxy cookie path
      */
-    protected String buildProxyCookiePath(HttpServletRequest servletRequest) {
+    private String buildProxyCookiePath(HttpServletRequest servletRequest) {
         String path = servletRequest.getContextPath(); // path starts with / or is empty string
         path += servletRequest.getServletPath(); // servlet path starts with / or is empty string
         if (path.isEmpty()) {
@@ -225,7 +223,7 @@ public class HttpResponseProxyFactory {
      * @param servletResponse
      * @throws java.io.IOException
      */
-    protected void copyResponseEntity(HttpResponse proxyResponse, HttpServletResponse servletResponse)
+    private void copyResponseEntity(HttpResponse proxyResponse, HttpServletResponse servletResponse)
             throws IOException {
         HttpEntity entity = proxyResponse.getEntity();
         if (entity != null) {
@@ -238,17 +236,17 @@ public class HttpResponseProxyFactory {
                 while ((read = is.read(buffer)) != -1) {
                     os.write(buffer, 0, read);
                     /*-
-           * Issue in Apache http client/JDK: if the stream from client is
-           * compressed, apache http client will delegate to GzipInputStream.
-           * The #available implementation of InflaterInputStream (parent of
-           * GzipInputStream) return 1 until EOF is reached. This is not
-           * consistent with InputStream#available, which defines:
-           *
-           *   A single read or skip of this many bytes will not block,
-           *   but may read or skip fewer bytes.
-           *
-           *  To work around this, a flush is issued always if compression
-            *  is handled by apache http client
+                    * Issue in Apache http client/JDK: if the stream from client is
+                    * compressed, apache http client will delegate to GzipInputStream.
+                    * The #available implementation of InflaterInputStream (parent of
+                    * GzipInputStream) return 1 until EOF is reached. This is not
+                    * consistent with InputStream#available, which defines:
+                    *
+                    *   A single read or skip of this many bytes will not block,
+                    *   but may read or skip fewer bytes.
+                    *
+                    *  To work around this, a flush is issued always if compression
+                    *  is handled by apache http client
                      */
                     if (doHandleCompression || is.available() == 0 /* next is.read will block */) {
                         os.flush();
