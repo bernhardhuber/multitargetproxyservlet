@@ -38,11 +38,9 @@ public class HttpRequestProxyFactory {
     protected boolean doPreserveCookies = false;
     protected boolean doForwardIP = false;
     protected boolean doSendUrlFragment = false;
-    private final Config config;
     private final Env env;
 
     public HttpRequestProxyFactory(Config config, Env env) {
-        this.config = config;
         this.doHandleCompression = config.isDoHandleCompression();
         this.doPreserveHost = config.isDoPreserveHost();
         this.doPreserveCookies = config.isDoPreserveCookies();

@@ -37,10 +37,8 @@ public class HttpClientFactory {
     protected int readTimeout = -1;
     protected int connectionRequestTimeout = -1;
     protected int maxConnections = -1;
-    private final Config config;
 
     public HttpClientFactory(Config config) {
-        this.config = config;
         //---
         this.doHandleCompression = config.isDoHandleCompression();
         this.doHandleRedirects = config.isDoHandleRedirects();

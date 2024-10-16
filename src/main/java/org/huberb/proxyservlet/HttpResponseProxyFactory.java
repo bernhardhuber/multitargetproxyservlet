@@ -36,11 +36,9 @@ public class HttpResponseProxyFactory {
     protected boolean doPreserveCookies = false;
     protected boolean doHandleCompression = false;
 
-    private final Config config;
     private final Env env;
 
     public HttpResponseProxyFactory(Config config, Env env) {
-        this.config = config;
         this.doPreserveCookies = config.isDoPreserveCookies();
         this.doHandleCompression = config.isDoHandleCompression();
         this.env = env;
