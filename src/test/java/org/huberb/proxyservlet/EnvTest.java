@@ -27,13 +27,13 @@ import static org.junit.jupiter.api.Assertions.*;
 public class EnvTest {
 
     @Test
-    public void testGetTargetUri() {
+    /*default*/ void testGetTargetUri() {
         Env instance = new Builder().targetUri("http://localhost:8080/a").build();
         assertEquals("http://localhost:8080/a", instance.getTargetUri());
     }
 
     @Test
-    public void testGetTargetHost() {
+    /*default*/ void testGetTargetHost() {
         Env instance = new Builder().targetUri("http://localhost:8080/a").build();
         assertEquals("localhost", instance.getTargetHost().getHostName());
         assertEquals(8080, instance.getTargetHost().getPort());

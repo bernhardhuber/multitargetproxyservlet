@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ConfigTest {
 
     @Test
-    public void testConfigFromPropertiesBuilder() {
+    /*default*/ void testConfigFromPropertiesBuilder() {
         Properties props = new PropertiesBuilder(new Properties())
                 //---
                 .put("doLog", "false")
@@ -85,7 +85,7 @@ public class ConfigTest {
         "readTimeout: -1",
         "connectionRequestTimeout: -1",
         "maxConnections: -1",})
-    public void testFormatConfigValues(String expectedConfigNameValue) {
+    /*default*/ void testFormatConfigValues(String expectedConfigNameValue) {
         Config config = new Config();
         String s = config.formatConfigValues();
         assertNotNull(s);

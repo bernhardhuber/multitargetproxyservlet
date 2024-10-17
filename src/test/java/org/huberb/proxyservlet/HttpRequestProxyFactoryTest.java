@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 public class HttpRequestProxyFactoryTest {
 
     @Test
-    public void test_createHttpRequest_GET() throws IOException {
+    /*default*/ void test_createHttpRequest_GET() throws IOException {
         Env env = new Env.Builder().targetUri("http://localhost/targetUri").build();
         Config config = new Config();
         HttpRequestProxyFactory instance = new HttpRequestProxyFactory(config, env);
@@ -55,7 +55,7 @@ public class HttpRequestProxyFactoryTest {
     }
 
     @Test
-    public void test_createHttpRequest_POST() throws IOException {
+    /*default*/ void test_createHttpRequest_POST() throws IOException {
         Env env = new Env.Builder().targetUri("http://localhost/targetUri").build();
         Config config = new Config();
         HttpRequestProxyFactory instance = new HttpRequestProxyFactory(config, env);

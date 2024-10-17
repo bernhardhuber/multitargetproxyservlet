@@ -36,12 +36,8 @@ import static org.mockito.Mockito.when;
  */
 public class ParameterValueFactoryTest {
 
-    /**
-     * Test of setupTargetUrisFromServletInitParameter method, of class
-     * ParameterValueFactory.
-     */
     @Test
-    public void testSetupTargetUrisFromServletInitParameter() {
+    /*default*/ void testSetupTargetUrisFromServletInitParameter() {
         ServletConfig servletConfig = Mockito.mock(ServletConfig.class);
         when(servletConfig.getInitParameter("targetUri")).thenReturn("targetUriValue1");
         // targetUris
@@ -71,12 +67,8 @@ public class ParameterValueFactoryTest {
         );
     }
 
-    /**
-     * Test of setupTargetUrisFromProperties method, of class
-     * ParameterValueFactory.
-     */
     @Test
-    public void testSetupTargetUrisFromProperties() {
+    /*default*/ void testSetupTargetUrisFromProperties() {
         Properties props = new PropertiesBuilder(new Properties())
                 .put("targetUri", "targetUriValue1")
                 // targetUris
@@ -103,12 +95,8 @@ public class ParameterValueFactoryTest {
 
     }
 
-    /**
-     * Test of setupTargetUrisFromFunction method, of class
-     * ParameterValueFactory.
-     */
     @Test
-    public void testSetupTargetUrisFromFunction_targeUri() {
+    /*default*/ void testSetupTargetUrisFromFunction_targeUri() {
         UnaryOperator<String> f1 = key -> {
             if ("targetUri".equals(key)) {
                 return "targetUriValue";
@@ -125,12 +113,8 @@ public class ParameterValueFactoryTest {
         );
     }
 
-    /**
-     * Test of setupTargetUrisFromFunction method, of class
-     * ParameterValueFactory.
-     */
     @Test
-    public void testSetupTargetUrisFromFunction_targeUris() {
+    /*default*/ void testSetupTargetUrisFromFunction_targeUris() {
         UnaryOperator<String> f1 = key -> {
             if ("targetUris".equals(key)) {
                 return "targetUriValue1,targetUriValue2,targetUriValue3";
@@ -149,12 +133,8 @@ public class ParameterValueFactoryTest {
         );
     }
 
-    /**
-     * Test of setupTargetUrisFromFunction method, of class
-     * ParameterValueFactory.
-     */
     @Test
-    public void testSetupTargetUrisFromFunction_targeUrisDot() {
+    /*default*/ void testSetupTargetUrisFromFunction_targeUrisDot() {
         UnaryOperator<String> f1 = key -> {
             if (null == key) {
                 return null;

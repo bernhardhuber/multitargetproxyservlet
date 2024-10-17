@@ -26,11 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 public class HttpClientFactoryTest {
 
-    /**
-     * Test of createHttpClient method, of class HttpClientFactory.
-     */
     @Test
-    public void testCreateHttpClient() {
+    /*default*/ void testCreateHttpClient() {
         HttpClientFactory instance = new HttpClientFactory(new Config());
         HttpClient result = instance.createHttpClient();
         assertNotNull(result);

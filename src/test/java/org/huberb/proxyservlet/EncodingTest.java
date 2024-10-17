@@ -26,12 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class EncodingTest {
 
-    /**
-     * Test of encodeUriQuery method, of class Encoding.
-     */
     @ParameterizedTest
     @ValueSource(strings = {"ABC", "abc", "0123456789"})
-    public void testEncodeUriQuery(String s) {
+    /*default*/ void testEncodeUriQuery(String s) {
         assertEquals(s, Encoding.encodeUriQuery(s, false).toString());
         assertEquals(s, Encoding.encodeUriQuery(s, true).toString());
     }

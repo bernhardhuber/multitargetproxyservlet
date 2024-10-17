@@ -33,7 +33,7 @@ public class HobByHopHeadersTest {
         "Length",
         "X-Headername"
     })
-    public void testContainsHeader_false(String name) {
+    /*default*/ void testContainsHeader_false(String name) {
         assertFalse(HobByHopHeaders.containsHeader(name));
     }
 
@@ -48,7 +48,7 @@ public class HobByHopHeadersTest {
         "Transfer-Encoding",
         "Upgrade"
     })
-    public void testContainsHeader_true(String name) {
+    /*default*/ void testContainsHeader_true(String name) {
         assertTrue(HobByHopHeaders.containsHeader(name));
     }
 

@@ -35,7 +35,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 public class HttpResponseProxyFactoryTest {
 
     @Test
-    public void testSendResponse() throws IOException {
+    /*default*/ void testSendResponse() throws IOException {
         Env env = new Env.Builder().targetUri("http://localhost/targetUri").build();
         Config config = new Config();
         HttpResponseProxyFactory instance = new HttpResponseProxyFactory(config, env);
