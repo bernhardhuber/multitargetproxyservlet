@@ -29,17 +29,20 @@ import org.apache.http.client.HttpClient;
  *
  * @author pi
  */
-public class HttpClientExecutor {
+public class HttpClientExecutor implements AutoCloseable {
 
     private static final Logger LOG = Logger.getLogger(HttpClientExecutor.class.getName());
     protected boolean doLog = true;
     private final Config config;
     private final Env env;
+    private final HttpClient proxyClient;
 
     public HttpClientExecutor(Config config, Env env) {
         this.config = config;
         this.doLog = config.isDoLog();
         this.env = env;
+        this.proxyClient = new HttpClientFactory(config).createHttpClient();
+
     }
 
     public HttpResponse doExecute(HttpServletRequest servletRequest, HttpRequest proxyRequest) throws IOException {
@@ -50,27 +53,27 @@ public class HttpClientExecutor {
                     proxyRequest.getRequestLine().getUri());
             LOG.info(msg);
         }
-        HttpClient proxyClient = new HttpClientFactory(config).createHttpClient();
-        try {
-            HttpResponse httpResponse = proxyClient.execute(env.getTargetHost(), proxyRequest);
-            if (doLog) {
-                String msg = String.format("httpclient execute: status line %s", httpResponse.getStatusLine());
-                LOG.info(msg);
+
+        HttpResponse httpResponse = proxyClient.execute(env.getTargetHost(), proxyRequest);
+        if (doLog) {
+            String msg = String.format("httpclient execute: status line %s", httpResponse.getStatusLine());
+            LOG.info(msg);
+        }
+        return httpResponse;
+    }
+
+    @Override
+    public void close() throws Exception {
+        if (proxyClient instanceof Closeable) {
+            try {
+                ((Closeable) proxyClient).close();
+            } catch (IOException e) {
+                LOG.log(Level.WARNING, "shutting down HttpClient", e);
             }
-            return httpResponse;
-        } finally {
-            //Usually, clients implement Closeable:
-            if (proxyClient instanceof Closeable) {
-                try {
-                    ((Closeable) proxyClient).close();
-                } catch (IOException e) {
-                    LOG.log(Level.WARNING, "shutting down HttpClient", e);
-                }
-            } else {
-                //Older releases require we do this:
-                if (proxyClient != null) {
-                    proxyClient.getConnectionManager().shutdown();
-                }
+        } else {
+            //Older releases require we do this:
+            if (proxyClient != null) {
+                proxyClient.getConnectionManager().shutdown();
             }
         }
     }

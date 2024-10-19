@@ -56,9 +56,9 @@ public class Mediator {
         HttpRequest proxyRequest = new HttpRequestProxyFactory(config, env).createHttpRequest(servletRequest);
 
         HttpResponse proxyResponse = null;
-        try {
+        try (HttpClientExecutor httpClientExecutor = new HttpClientExecutor(config, env)) {
             // 2 Execute the proxy request
-            proxyResponse = new HttpClientExecutor(config, env).doExecute(servletRequest, proxyRequest);
+            proxyResponse = httpClientExecutor.doExecute(servletRequest, proxyRequest);
 
             // 3 Send the response 
             if (sendTheHttpResponse(i)) {
@@ -105,6 +105,6 @@ public class Mediator {
         if (e instanceof IOException) {
             throw (IOException) e;
         }
-        throw new RuntimeException(Mediator.class.getSimpleName(),e);
+        throw new RuntimeException(Mediator.class.getSimpleName(), e);
     }
 }
