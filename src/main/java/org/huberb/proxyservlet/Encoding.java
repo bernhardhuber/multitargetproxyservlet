@@ -17,7 +17,7 @@ package org.huberb.proxyservlet;
 
 import java.net.URI;
 import java.util.BitSet;
-import java.util.Formatter;
+import java.util.function.Consumer;
 
 /**
  * Encodes characters in the query or fragment part of the URI.
@@ -26,9 +26,10 @@ import java.util.Formatter;
  */
 class Encoding {
 
-    private static final BitSet asciiQueryChars;
+    private static final BitSet asciiQueryChars = createBitSet();
 
-    static {
+    private static BitSet createBitSet() {
+
         /*
          * Plus alphanum
          * Plus punct.  
@@ -40,26 +41,27 @@ class Encoding {
         char[] cPunct = ",;:$&+=".toCharArray();
         char[] cReserved = "/@".toCharArray();
 
-        asciiQueryChars = new BitSet(128);
-        for (char c = 'a'; c <= 'z'; c++) {
-            asciiQueryChars.set(c);
-        }
-        for (char c = 'A'; c <= 'Z'; c++) {
-            asciiQueryChars.set(c);
-        }
-        for (char c = '0'; c <= '9'; c++) {
-            asciiQueryChars.set(c);
-        }
-        for (char c : cUnreserved) {
-            asciiQueryChars.set(c);
-        }
-        for (char c : cPunct) {
-            asciiQueryChars.set(c);
-        }
-        for (char c : cReserved) {
-            asciiQueryChars.set(c);
-        }
-        asciiQueryChars.set('%'); //leave existing percent escapes in place
+        final BitSet bitSet = new BitSet(128);
+
+        Consumer<char[]> charsConsumer = chars -> {
+            for (char c : chars) {
+                bitSet.set(c);
+            }
+        };
+        Consumer<String> stringConsumer = s -> {
+            for (int i = 0; i < s.length(); i += 1) {
+                bitSet.set(s.charAt(i));
+            }
+        };
+        stringConsumer.accept("abcdefghijklmnopqrstuvwxyz");
+        stringConsumer.accept("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        stringConsumer.accept("0123456789");
+        charsConsumer.accept(cUnreserved);
+        charsConsumer.accept(cPunct);
+        charsConsumer.accept(cReserved);
+        bitSet.set('%'); //leave existing percent escapes in place
+
+        return bitSet;
     }
 
     private Encoding() {
@@ -82,7 +84,6 @@ class Encoding {
     static CharSequence encodeUriQuery(CharSequence in, boolean encodePercent) {
         //Note that I can't simply use URI.java to encode because it will escape pre-existing escaped things.
         StringBuilder outBuf = null;
-        Formatter formatter = null;
         for (int i = 0; i < in.length(); i++) {
             char c = in.charAt(i);
             boolean escape = true;
@@ -103,10 +104,9 @@ class Encoding {
                 if (outBuf == null) {
                     outBuf = new StringBuilder(in.length() + 5 * 3);
                     outBuf.append(in, 0, i);
-                    formatter = new Formatter(outBuf);
                 }
                 //leading %, 0 padded, width 2, capital hex
-                formatter.format("%%%02X", (int) c); //TODO
+                outBuf.append(String.format("%%%02X", (int) c));
             }
         }
         return outBuf != null ? outBuf : in;

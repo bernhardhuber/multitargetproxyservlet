@@ -20,6 +20,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.AbortableHttpRequest;
@@ -34,23 +35,22 @@ public class Mediator {
 
     private final Config config;
     private final Env env;
-    private final int i;
 
-    public Mediator(Config config, Env env, int i) {
+    public Mediator(Config config, Env env) {
         this.config = config;
         this.env = env;
-        this.i = i;
     }
 
     /**
      * Send a proxy request to target, and process the response.
      *
+     * @param i
      * @param servletRequest
      * @param servletResponse
      * @throws IOException
      * @throws ServletException
      */
-    public void service(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException {
+    public void service(int i, HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, ServletException {
 
         // 1 Create the proxy request
         HttpRequest proxyRequest = new HttpRequestProxyFactory(config, env).createHttpRequest(servletRequest);
@@ -78,7 +78,7 @@ public class Mediator {
         }
     }
 
-    boolean sendTheHttpResponse(int i) {
+    protected boolean sendTheHttpResponse(int i) {
         return i == 0;
     }
 

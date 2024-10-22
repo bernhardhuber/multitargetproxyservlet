@@ -69,7 +69,7 @@ public class MultiProxyingServlet extends HttpServlet {
                 LOG.info(msg);
             }
             Env env = new Env.Builder().targetUri(targetUri).build();
-            new Mediator(config, env, i).service(req, resp);
+            new Mediator(config, env).service(i, req, resp);
         }
     }
 

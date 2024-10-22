@@ -16,11 +16,8 @@
 package org.huberb.proxyservlet;
 
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.http.HttpRequest;
 import org.junit.jupiter.api.Test;
 
@@ -43,8 +40,8 @@ public class HttpRequestProxyFactoryTest {
 
         HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getMethod()).thenReturn("GET");
-        Vector<String> headers = new Vector<>();
-        when(servletRequest.getHeaderNames()).thenReturn(headers.elements());
+        HeaderStore hs = new HeaderStore();
+        when(servletRequest.getHeaderNames()).thenReturn(hs.getHeaderNames());
         when(servletRequest.getHeader(anyString())).thenReturn(null);
 
         HttpRequest httpRequest = instance.createHttpRequest(servletRequest);
@@ -75,33 +72,4 @@ public class HttpRequestProxyFactoryTest {
         assertEquals("http://localhost/targetUri", httpRequest.getRequestLine().getUri());
     }
 
-    // utility for mimicking Header API
-    static class HeaderStore {
-
-        Map<String, String> values = new HashMap<>();
-
-        HeaderStore put(String k, String v) {
-            values.put(k, v);
-            return this;
-        }
-
-        Enumeration<String> getHeaderNames() {
-            Vector<String> vec = new Vector<>();
-            values.keySet().forEach(k -> vec.add(k));
-            return vec.elements();
-        }
-
-        String getHeader(String key) {
-            return values.get(key);
-        }
-
-        Enumeration<String> getHeaderNames(String key) {
-            Vector<String> vec = new Vector<>();
-            String value = values.get(key);
-            if (value != null) {
-                vec.add(value);
-            }
-            return vec.elements();
-        }
-    }
 }

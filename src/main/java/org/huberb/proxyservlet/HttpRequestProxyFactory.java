@@ -18,6 +18,7 @@ package org.huberb.proxyservlet;
 import java.io.IOException;
 import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;

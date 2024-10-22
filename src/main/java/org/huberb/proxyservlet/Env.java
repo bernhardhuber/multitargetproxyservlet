@@ -16,6 +16,7 @@
 package org.huberb.proxyservlet;
 
 import java.net.URI;
+
 import org.apache.http.HttpHost;
 import org.apache.http.client.utils.URIUtils;
 

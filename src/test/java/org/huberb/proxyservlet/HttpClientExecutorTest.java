@@ -15,11 +15,12 @@
  */
 package org.huberb.proxyservlet;
 
+import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
+
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import java.io.IOException;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
