@@ -22,15 +22,21 @@ import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
-import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -41,8 +47,12 @@ import static org.mockito.Mockito.when;
  *
  * @author pi
  */
-@WireMockTest
 public class MediatorTest {
+
+    @RegisterExtension
+    static WireMockExtension wmExtension = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort().dynamicHttpsPort())
+            .build();
 
     /**
      * Test of service method, of class Mediator.
@@ -50,16 +60,19 @@ public class MediatorTest {
      * @param wmRuntimeInfo
      * @throws java.lang.Exception
      */
-    @Test
-    /*default*/ void testServiceWithHttpGet_ok(WireMockRuntimeInfo wmRuntimeInfo) throws Exception {
+    @ParameterizedTest
+    @MethodSource
+    /*default*/ void testServiceWithHttpGet(int statusCode, String statusMessage) throws Exception {
+        WireMockRuntimeInfo wmRuntimeInfo = wmExtension.getRuntimeInfo();
+
         String baseUrl = wmRuntimeInfo.getHttpBaseUrl();
         String uriASlash = "/aGET";
         String responseADashContent = "a-content";
         String method = "GET";
 
         Config config = new Config();
-        WireMock.stubFor(get(uriASlash)
-                .willReturn(ok().withBody(responseADashContent)));
+        wmExtension.stubFor(get(uriASlash)
+                .willReturn(status(statusCode).withBody(responseADashContent)));
 
         Env env = new Env.Builder().targetUri(baseUrl + uriASlash).build();
         assertTrue(baseUrl.contains(env.getTargetHost().getHostName()), env.getTargetHost().toURI());
@@ -69,7 +82,6 @@ public class MediatorTest {
         HttpServletRequest servletRequest = Mockito.mock(HttpServletRequest.class);
         when(servletRequest.getMethod()).thenReturn(method);
         when(servletRequest.getRequestURI()).thenReturn(uriASlash);
-        when(servletRequest.getMethod()).thenReturn("GET");
         when(servletRequest.getProtocol()).thenReturn("HTTP/1.1");
         HeaderStore hs = new HeaderStore();
         when(servletRequest.getHeaderNames()).thenReturn(hs.getHeaderNames());
@@ -85,49 +97,21 @@ public class MediatorTest {
             Mediator instance = new Mediator(config, env);
             instance.service(0, servletRequest, servletResponse);
 
-            verify(servletResponse, times(1)).setStatus(200, "OK");
+            verify(servletResponse, times(1)).setStatus(statusCode, statusMessage);
             assertEquals(responseADashContent, basos.baos.toString("UTF-8"));
         }
     }
 
-    @Test
-    /*default*/ void testServiceWithHttpGet_500(WireMockRuntimeInfo wmRuntimeInfo) throws Exception {
-        String baseUrl = wmRuntimeInfo.getHttpBaseUrl();
-        String uriASlash = "/aGET";
-        String responseADashContent = "a-content";
-        String method = "GET";
-
-        Config config = new Config();
-        WireMock.stubFor(get(uriASlash)
-                .willReturn(status(500).withBody(responseADashContent)));
-
-        Env env = new Env.Builder().targetUri(baseUrl + uriASlash).build();
-        assertTrue(baseUrl.contains(env.getTargetHost().getHostName()), env.getTargetHost().toURI());
-        assertTrue(baseUrl.contains("" + env.getTargetHost().getPort()), env.getTargetHost().toURI());
-
-        //---
-        HttpServletRequest servletRequest = Mockito.mock(HttpServletRequest.class);
-        when(servletRequest.getMethod()).thenReturn(method);
-        when(servletRequest.getRequestURI()).thenReturn(uriASlash);
-        when(servletRequest.getMethod()).thenReturn("GET");
-        when(servletRequest.getProtocol()).thenReturn("HTTP/1.1");
-        HeaderStore hs = new HeaderStore();
-        when(servletRequest.getHeaderNames()).thenReturn(hs.getHeaderNames());
-        when(servletRequest.getHeader(anyString())).thenReturn(null);
-
-        //---
-        HttpServletResponse servletResponse = Mockito.mock(HttpServletResponse.class);
-
-        try (ByteArrayServletOutputStream basos = new ByteArrayServletOutputStream()) {
-
-            when(servletResponse.getOutputStream()).thenReturn(basos);
-            //---
-            Mediator instance = new Mediator(config, env);
-            instance.service(0, servletRequest, servletResponse);
-
-            verify(servletResponse, times(1)).setStatus(500, "Server Error");
-            assertEquals(responseADashContent, basos.baos.toString("UTF-8"));
-        }
+    static Stream<Arguments> testServiceWithHttpGet() {
+        return Stream.of(
+                Arguments.of(200, "OK"),
+                Arguments.of(400, "Bad Request"),
+                Arguments.of(401, "Unauthorized"),
+                Arguments.of(402, "Payment Required"),
+                Arguments.of(403, "Forbidden"),
+                Arguments.of(404, "Not Found"),
+                Arguments.of(500, "Server Error")
+        );
     }
 
     static class ByteArrayServletOutputStream extends ServletOutputStream {
