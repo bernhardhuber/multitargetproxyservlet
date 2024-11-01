@@ -227,8 +227,12 @@ public class Config {
                             boolean v = Boolean.parseBoolean(value);
                             ((Accessor<Boolean>) acc).consumer.accept(v);
                         } else if (acc.clazz.equals(Integer.class)) {
-                            int v = Integer.parseInt(value);
-                            ((Accessor<Integer>) acc).consumer.accept(v);
+                            try {
+                                int v = Integer.parseInt(value);
+                                ((Accessor<Integer>) acc).consumer.accept(v);
+                            } catch (NumberFormatException nfex) {
+                                // ignore non number value
+                            }
                         } else if (acc.clazz.equals(String.class)) {
                             String v = value;
                             ((Accessor<String>) acc).consumer.accept(v);
